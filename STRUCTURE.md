@@ -52,7 +52,8 @@ Located at: `presentation/base/`
   - `effect: Flow<Effect>` — via `Channel(Channel.BUFFERED)`
   - `setState {}` — update state immutably
   - `sendEffect()` — emit one-time effect
-  - `onEvent()` — abstract, handle UiEvent
+  - `onEvent()` — public, 외부 진입점
+- `handleEvent()` — abstract, 구현체가 오버라이드
 
 ---
 

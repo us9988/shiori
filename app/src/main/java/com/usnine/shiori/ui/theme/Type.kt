@@ -15,6 +15,12 @@ private val provider = GoogleFont.Provider(
     certificates = R.array.com_google_android_gms_fonts_certs,
 )
 
+val NotoSerifJpFamily = FontFamily(
+    Font(googleFont = GoogleFont("Noto Serif JP"), fontProvider = provider, weight = FontWeight.Light),
+    Font(googleFont = GoogleFont("Noto Serif JP"), fontProvider = provider, weight = FontWeight.Normal),
+    Font(googleFont = GoogleFont("Noto Serif JP"), fontProvider = provider, weight = FontWeight.Medium),
+)
+
 private val NotoSansKR = FontFamily(
     Font(googleFont = GoogleFont("Noto Sans KR"), fontProvider = provider, weight = FontWeight.Normal),
     Font(googleFont = GoogleFont("Noto Sans KR"), fontProvider = provider, weight = FontWeight.Medium),

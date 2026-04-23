@@ -1,3 +1,77 @@
 <resources>
     <string name="app_name">Shiori</string>
+
+    <!-- Home -->
+    <string name="home_greeting">안녕하세요 👋</string>
+    <string name="home_app_title">shiori</string>
+    <string name="home_subtitle">좋아하는 문장으로 배우는 일본어</string>
+    <string name="home_today_mission">오늘의 미션</string>
+    <string name="home_mission_duration">5문제 · 약 2분</string>
+    <string name="mission_hiragana_quiz">히라가나 %s 퀴즈</string>
+    <string name="mission_katakana_quiz">가타카나 %s 퀴즈</string>
+    <string name="mission_word_review">단어 %d개 복습하기</string>
+    <string name="mission_new_analysis">새 문장 분석해보기</string>
+    <string name="home_streak_label">연속 학습일</string>
+    <string name="home_bookmarks_section">내 책갈피</string>
+    <string name="home_bookmarks_empty">아직 저장한 문장이 없어요</string>
+    <string name="home_bookmarks_empty_subtitle">문장분석 탭에서 문장을 저장해보세요</string>
+
+    <!-- Kana -->
+    <string name="kana_title">글자 학습</string>
+    <string name="kana_quiz_button">%s 퀴즈 시작 →</string>
+
+    <!-- Quiz -->
+    <string name="quiz_back">← 돌아가기</string>
+    <string name="quiz_prompt">발음을 고르세요</string>
+    <string name="quiz_correct">정답! %1$s = %2$s</string>
+    <string name="quiz_wrong">아쉽네요. %1$s = %2$s</string>
+    <string name="quiz_result_perfect">완벽해요! 마스터 완료</string>
+    <string name="quiz_result_retry">수고했어요. 다시 도전해보세요</string>
+    <string name="quiz_result_score">%1$d / %2$d 정답</string>
+    <string name="quiz_back_button">돌아가기</string>
+
+    <!-- Analysis -->
+    <string name="analysis_title">문장 분석</string>
+    <string name="analysis_input_hint">가사 URL 또는 일본어 입력…</string>
+    <string name="analysis_button">분석</string>
+    <string name="analysis_empty_hint">문장을 입력하고 분석을 시작해보세요</string>
+    <string name="analysis_grammar_section">문법 분석</string>
+    <string name="analysis_words_section">단어</string>
+    <string name="analysis_save_button">단어 %d개 저장하기</string>
+    <string name="analysis_save_toast">단어 %d개를 저장했어요</string>
+    <string name="analysis_bookmark_saved">단어장에 저장됐어요 🔖</string>
+    <string name="analysis_bookmark_action">단어 북마크</string>
+
+    <!-- Sentence (bottom tab) -->
+    <string name="sentence_title">문장</string>
+    <string name="sentence_conversation_coming_soon">준비 중이에요</string>
+    <string name="sentence_conversation_subtitle">일상회화 학습이 곧 추가돼요</string>
+
+    <!-- My (bottom tab) -->
+    <string name="my_title">마이</string>
+    <string name="my_section_bookmarks">내 단어장</string>
+    <string name="my_section_saved_words">저장된 단어</string>
+    <string name="my_section_stats">학습통계</string>
+    <string name="my_section_settings">설정</string>
+    <string name="my_stats_kana">학습 글자</string>
+    <string name="my_stats_streak">연속학습일</string>
+    <string name="my_stats_complete">완료 단어</string>
+    <string name="my_bookmark_remove_desc">북마크 삭제</string>
+    <string name="my_empty_words">저장된 단어가 없어요</string>
+    <string name="my_empty_words_subtitle">문장분석에서 단어를 저장해보세요</string>
+    <string name="my_settings_coming_soon">설정 기능이 곧 추가돼요</string>
+
+    <!-- Vocab -->
+    <string name="vocab_title">내 단어장</string>
+    <string name="vocab_stat_total">전체</string>
+    <string name="vocab_stat_today">오늘복습</string>
+    <string name="vocab_stat_completed">암기완료</string>
+    <string name="vocab_card_hint">탭해서 뜻 확인</string>
+    <string name="vocab_card_done">복습 완료!</string>
+    <string name="vocab_btn_again">다시볼게요</string>
+    <string name="vocab_btn_know">알아요</string>
+    <string name="vocab_words_section">전체 단어</string>
+    <string name="vocab_empty_title">아직 저장된 단어가 없어요</string>
+    <string name="vocab_empty_subtitle">문장 분석 탭에서 단어를 저장해보세요</string>
+    <string name="vocab_review_done_toast">오늘 복습 완료!</string>
 </resources>
