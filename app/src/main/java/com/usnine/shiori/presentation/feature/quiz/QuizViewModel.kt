@@ -21,39 +21,41 @@ class QuizViewModel : MviViewModel<QuizContract.UiEvent, QuizContract.UiState, Q
 
     override fun handleEvent(event: QuizContract.UiEvent) {
         when (event) {
-            is QuizContract.UiEvent.LoadQuiz        -> loadQuiz(event.tab)
-            is QuizContract.UiEvent.AnswerSelected  -> onAnswerSelected(event.answer)
-            is QuizContract.UiEvent.NextQuestion    -> onNextQuestion()
+            is QuizContract.UiEvent.LoadQuiz       -> loadQuiz(event.tab, event.selectedKana)
+            is QuizContract.UiEvent.AnswerSelected -> onAnswerSelected(event.answer)
+            QuizContract.UiEvent.NextQuestion      -> onNextQuestion()
+            QuizContract.UiEvent.AdDismissed       -> onAdDismissed()
         }
     }
 
-    private fun loadQuiz(tab: KanaTab) {
+    private fun loadQuiz(tab: KanaTab, selectedKana: Set<String>) {
         val rows = when (tab) {
             KanaTab.HIRAGANA -> KanaData.hiraganaRows
             KanaTab.KATAKANA -> KanaData.katakanaRows
             KanaTab.DAKUTEN  -> KanaData.dakutenRows
+            KanaTab.ALL      -> KanaData.hiraganaRows + KanaData.katakanaRows + KanaData.dakutenRows
         }
 
-        // 전체 아이템 + 행 레이블 flatten
         val allTagged = rows.flatMap { row ->
             row.items.filterNotNull().map { item -> item to row.label }
         }
+        // 오답 보기는 전체 풀에서 선택해 다양성 확보
+        val choicePool = allTagged
+        val allReadings = choicePool.map { it.first.koreanReading }.distinct()
 
-        // 모든 romaji 풀
-        val allRomaji = allTagged.map { it.first.romaji }.distinct()
+        val quizPool = if (selectedKana.isEmpty()) allTagged
+                       else allTagged.filter { (item, _) -> item.kana in selectedKana }
 
-        questions = allTagged.shuffled().map { (item, rowLabel) ->
-            // 오답: 같은 행 제외, 정답과 다른 romaji에서 3개 선택
-            val wrongChoices = allTagged
-                .filter { (other, otherRow) -> otherRow != rowLabel && other.romaji != item.romaji }
-                .map { it.first.romaji }
+        questions = quizPool.shuffled().map { (item, rowLabel) ->
+            val wrongChoices = choicePool
+                .filter { (other, otherRow) -> otherRow != rowLabel && other.koreanReading != item.koreanReading }
+                .map { it.first.koreanReading }
                 .distinct()
                 .shuffled()
                 .take(3)
                 .let { picked ->
-                    // 같은 행 외에 3개가 부족할 경우 전체 풀에서 보충
                     if (picked.size < 3) {
-                        val fallback = allRomaji.filter { it != item.romaji }.shuffled()
+                        val fallback = allReadings.filter { it != item.koreanReading }.shuffled()
                         (picked + fallback).distinct().take(3)
                     } else picked
                 }
@@ -61,7 +63,7 @@ class QuizViewModel : MviViewModel<QuizContract.UiEvent, QuizContract.UiState, Q
             QuizQuestion(
                 item = item,
                 rowLabel = rowLabel,
-                choices = (wrongChoices + item.romaji).shuffled(),
+                choices = (wrongChoices + item.koreanReading).shuffled(),
             )
         }
 
@@ -85,7 +87,7 @@ class QuizViewModel : MviViewModel<QuizContract.UiEvent, QuizContract.UiState, Q
     private fun onAnswerSelected(answer: String) {
         if (state.value.selectedAnswer != null) return
 
-        val isCorrect = answer == state.value.currentKana.romaji
+        val isCorrect = answer == state.value.currentKana.koreanReading
         setState {
             copy(
                 selectedAnswer = answer,
@@ -103,19 +105,24 @@ class QuizViewModel : MviViewModel<QuizContract.UiEvent, QuizContract.UiState, Q
     private fun onNextQuestion() {
         val nextIndex = state.value.currentIndex + 1
         if (nextIndex >= questions.size) {
-            setState { copy(isFinished = true) }
-            sendEffect(QuizContract.UiEffect.ShowResult)
+            setState { copy(currentIndex = nextIndex) }
+            sendEffect(QuizContract.UiEffect.ShowInterstitialAd)
         } else {
             val next = questions[nextIndex]
             setState {
                 copy(
-                    currentIndex = nextIndex,
-                    currentKana = next.item,
-                    choices = next.choices,
+                    currentIndex   = nextIndex,
+                    currentKana    = next.item,
+                    choices        = next.choices,
                     selectedAnswer = null,
-                    isCorrect = null,
+                    isCorrect      = null,
                 )
             }
         }
+    }
+
+    private fun onAdDismissed() {
+        setState { copy(isFinished = true) }
+        sendEffect(QuizContract.UiEffect.ShowResult)
     }
 }

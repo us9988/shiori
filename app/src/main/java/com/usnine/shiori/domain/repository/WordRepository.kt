@@ -6,8 +6,8 @@ import com.usnine.shiori.domain.model.Word
 import kotlinx.coroutines.flow.Flow
 
 interface WordRepository {
+    fun getAll(): Flow<List<Word>>
     fun getByLevel(level: WordLevel): Flow<List<Word>>
     fun getByPartOfSpeech(pos: PartOfSpeech): Flow<List<Word>>
-    suspend fun toggleCompleted(wordId: Long)
     suspend fun toggleBookmark(wordId: Long)
 }

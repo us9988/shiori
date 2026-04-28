@@ -10,6 +10,7 @@ data class WordUi(
     val id: Long,
     val japanese: String,
     val reading: String,
+    val koreanReading: String,
     val meaning: String,
     val partOfSpeech: PartOfSpeech,
     val level: WordLevel,
@@ -18,24 +19,36 @@ data class WordUi(
 interface MyContract {
 
     data class UiState(
-        // 플래시카드 세션
+        val showWordList: Boolean = false,
+        val showPremiumModal: Boolean = false,
         val bookmarks: List<WordUi> = emptyList(),
         val currentCard: WordUi? = null,
         val isCardFlipped: Boolean = false,
-        val sessionCompleted: Int = 0,   // 이번 세션 알아요 탭 횟수
-        // 학습 통계 (GetStudyStatsUseCase)
-        val totalBookmarks: Int = 0,     // 학습한 글자 수 (LearnedKana)
-        val completedWords: Int = 0,     // 완료 단어 수 (isCompleted = true)
-        val todayReviewCount: Int = 0,   // 오늘 복습 횟수
         val streakDays: Int = 0,
+        val todayReviewCount: Int = 0,
+        val isDarkMode: Boolean = false,
+        val isPremium: Boolean = false,
     ) : MviState
 
     sealed interface UiEvent : MviEvent {
-        data class BookmarkRemoved(val wordId: Long) : UiEvent
-        data object CardFlipped  : UiEvent
-        data object KnowTapped   : UiEvent
-        data object AgainTapped  : UiEvent
+        data object WordListOpened       : UiEvent
+        data object WordListClosed       : UiEvent
+        data object PremiumModalOpened   : UiEvent
+        data object PremiumModalClosed   : UiEvent
+        data class  BookmarkRemoved(val wordId: Long) : UiEvent
+        data object CardFlipped          : UiEvent
+        data object NextTapped           : UiEvent
+        data object DarkModeToggled      : UiEvent
+        data object RateTapped           : UiEvent
+        data object PurchaseCompleted    : UiEvent
+        data object PurchaseTapped       : UiEvent
+        data object RestorePurchaseTapped: UiEvent
     }
 
-    sealed interface UiEffect : MviEffect
+    sealed interface UiEffect : MviEffect {
+        data object LaunchPlayStore    : UiEffect
+        data object LaunchPurchaseFlow : UiEffect
+        data object ShowRestoreSuccess : UiEffect
+        data object ShowRestoreFailure : UiEffect
+    }
 }

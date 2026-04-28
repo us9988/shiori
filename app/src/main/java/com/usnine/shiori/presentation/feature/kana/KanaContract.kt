@@ -9,6 +9,7 @@ enum class KanaTab(val label: String) {
     HIRAGANA("히라가나"),
     KATAKANA("가타카나"),
     DAKUTEN("탁음"),
+    ALL("전체"),
 }
 
 interface KanaContract {
@@ -17,11 +18,13 @@ interface KanaContract {
         val selectedTab: KanaTab = KanaTab.HIRAGANA,
         val rows: List<KanaRow> = emptyList(),
         val learnedSet: Set<String> = emptySet(),
+        val allQuizCount: Int = 10,
     ) : MviState
 
     sealed interface UiEvent : MviEvent {
         data class TabChanged(val tab: KanaTab) : UiEvent
         data class KanaTapped(val kana: String) : UiEvent
+        data class AllQuizCountChanged(val count: Int) : UiEvent
     }
 
     sealed interface UiEffect : MviEffect

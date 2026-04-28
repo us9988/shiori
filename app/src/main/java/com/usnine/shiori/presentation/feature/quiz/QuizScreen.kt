@@ -1,5 +1,6 @@
 package com.usnine.shiori.presentation.feature.quiz
 
+import android.app.Activity
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -36,9 +37,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.usnine.shiori.R
+import com.usnine.shiori.presentation.analytics.AnalyticsManager
+import com.usnine.shiori.presentation.analytics.CrashlyticsManager
+import com.usnine.shiori.presentation.ad.AdMobEntryPoint
+import dagger.hilt.android.EntryPointAccessors
 import com.usnine.shiori.presentation.feature.kana.KanaTab
 import com.usnine.shiori.ui.components.DuckImage
 import com.usnine.shiori.ui.components.DuckMood
@@ -47,20 +53,41 @@ import com.usnine.shiori.ui.theme.NotoSerifJpFamily
 @Composable
 fun QuizScreen(
     tab: KanaTab,
+    selectedKana: Set<String> = emptySet(),
+    isPremium: Boolean = false,
     onNavigateBack: () -> Unit,
     viewModel: QuizViewModel = viewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     LaunchedEffect(tab) {
-        viewModel.onEvent(QuizContract.UiEvent.LoadQuiz(tab))
+        viewModel.onEvent(QuizContract.UiEvent.LoadQuiz(tab, selectedKana))
+    }
+
+    LaunchedEffect(Unit) {
+        AnalyticsManager.logScreenView(AnalyticsManager.SCREEN_KANA_QUIZ)
+        CrashlyticsManager.setCurrentScreen(AnalyticsManager.SCREEN_KANA_QUIZ)
     }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                QuizContract.UiEffect.NavigateBack -> onNavigateBack()
-                QuizContract.UiEffect.ShowResult   -> Unit
+                QuizContract.UiEffect.NavigateBack       -> onNavigateBack()
+                QuizContract.UiEffect.ShowResult         -> Unit
+                QuizContract.UiEffect.ShowInterstitialAd -> {
+                    val adMobManager = EntryPointAccessors
+                        .fromApplication(context.applicationContext, AdMobEntryPoint::class.java)
+                        .adMobManager()
+                    val activity = context as? Activity
+                    if (activity != null) {
+                        adMobManager.showInterstitialAd(activity, isPremium) {
+                            viewModel.onEvent(QuizContract.UiEvent.AdDismissed)
+                        }
+                    } else {
+                        viewModel.onEvent(QuizContract.UiEvent.AdDismissed)
+                    }
+                }
             }
         }
     }
@@ -112,7 +139,7 @@ fun QuizScreen(
 
             ChoiceGrid(
                 choices = state.choices,
-                correctAnswer = state.currentKana.romaji,
+                correctAnswer = state.currentKana.koreanReading,
                 selectedAnswer = state.selectedAnswer,
                 onChoiceClick = { viewModel.onEvent(QuizContract.UiEvent.AnswerSelected(it)) },
             )
@@ -120,8 +147,8 @@ fun QuizScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             val feedback = when (state.isCorrect) {
-                true  -> stringResource(R.string.quiz_correct, state.currentKana.kana, state.currentKana.romaji)
-                false -> stringResource(R.string.quiz_wrong, state.currentKana.kana, state.currentKana.romaji)
+                true  -> stringResource(R.string.quiz_correct, state.currentKana.kana, state.currentKana.koreanReading)
+                false -> stringResource(R.string.quiz_wrong, state.currentKana.kana, state.currentKana.koreanReading)
                 null  -> ""
             }
             val feedbackColor = when (state.isCorrect) {
@@ -172,7 +199,7 @@ private fun QuizProgressRow(
             trackColor = MaterialTheme.colorScheme.surface,
         )
         Text(
-            text = if (total > 0) "${currentIndex + 1} / $total" else "",
+            text = if (total > 0) "${(currentIndex + 1).coerceAtMost(total)} / $total" else "",
             fontSize = 11.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

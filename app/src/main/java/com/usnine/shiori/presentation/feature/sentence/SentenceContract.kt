@@ -7,7 +7,6 @@ import com.usnine.shiori.presentation.base.MviState
 enum class SentenceTab(val label: String) {
     WORD("단어"),
     CONVERSATION("일상회화"),
-    ANALYSIS("문장분석"),
 }
 
 interface SentenceContract {

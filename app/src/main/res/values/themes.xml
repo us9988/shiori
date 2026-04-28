@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.Shiori" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.Shiori.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#F5F1EA</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Shiori</item>
+    </style>
 </resources>

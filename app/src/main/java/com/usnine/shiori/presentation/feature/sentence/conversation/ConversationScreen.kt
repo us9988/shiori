@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,11 +40,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.usnine.shiori.presentation.analytics.AnalyticsManager
+import com.usnine.shiori.presentation.analytics.CrashlyticsManager
 import com.usnine.shiori.ui.theme.NotoSerifJpFamily
 
 @Composable
 fun ConversationScreen(viewModel: ConversationViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        AnalyticsManager.logScreenView(AnalyticsManager.SCREEN_CONVERSATION)
+        CrashlyticsManager.setCurrentScreen(AnalyticsManager.SCREEN_CONVERSATION)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         FilterChipRow(
@@ -173,9 +181,10 @@ private fun PhraseCard(
             )
         }
 
-        Spacer(modifier = Modifier.width(12.dp))
-
-        PlayButton(isPlaying = isPlaying, onClick = onPlayTap)
+        if (phrase.audioFileName.isNotBlank()) {
+            Spacer(modifier = Modifier.width(12.dp))
+            PlayButton(isPlaying = isPlaying, onClick = onPlayTap)
+        }
     }
 }
 

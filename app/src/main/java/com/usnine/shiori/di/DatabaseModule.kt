@@ -6,7 +6,12 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.usnine.shiori.data.local.ShioriDatabase
+import com.usnine.shiori.data.local.DataVersionDataStore
+import com.usnine.shiori.data.local.PHRASE_VERSION
+import com.usnine.shiori.data.local.WORD_VERSION
 import com.usnine.shiori.data.local.allPhrases
+import com.usnine.shiori.data.local.allWords
+import kotlinx.coroutines.flow.first
 import com.usnine.shiori.data.local.dao.BookmarkDao
 import com.usnine.shiori.data.local.dao.LearnedKanaDao
 import com.usnine.shiori.data.local.dao.PhraseDao
@@ -41,26 +46,59 @@ private val MIGRATION_6_7 = object : Migration(6, 7) {
     }
 }
 
+private val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE words ADD COLUMN koreanReading TEXT NOT NULL DEFAULT \"\"")
+    }
+}
+
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideShioriDatabase(@ApplicationContext context: Context): ShioriDatabase {
+    fun provideShioriDatabase(
+        @ApplicationContext context: Context,
+        dataVersionDataStore: DataVersionDataStore,
+    ): ShioriDatabase {
         lateinit var instance: ShioriDatabase
         instance = Room.databaseBuilder(
             context,
             ShioriDatabase::class.java,
             "shiori.db",
         )
-            .addMigrations(MIGRATION_5_6, MIGRATION_6_7)
+            .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
             .fallbackToDestructiveMigration()
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     CoroutineScope(Dispatchers.IO).launch {
-                        instance.phraseDao().insertAll(allPhrases)
+                        instance.wordDao().insertAll(allWords)
+                    }
+                }
+                override fun onOpen(db: SupportSQLiteDatabase) {
+                    super.onOpen(db)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val savedWordVersion = dataVersionDataStore.wordDataVersion.first()
+                        if (savedWordVersion < WORD_VERSION) {
+                            val currentCount = instance.wordDao().getCount()
+                            val newWords = allWords.filter { it.id > currentCount }
+                            if (newWords.isNotEmpty()) {
+                                instance.wordDao().insertAll(newWords)
+                            }
+                            dataVersionDataStore.setWordDataVersion(WORD_VERSION)
+                        }
+
+                        val savedPhraseVersion = dataVersionDataStore.phraseDataVersion.first()
+                        if (savedPhraseVersion < PHRASE_VERSION) {
+                            val currentCount = instance.phraseDao().getCount()
+                            val newPhrases = allPhrases.filter { it.id > currentCount }
+                            if (newPhrases.isNotEmpty()) {
+                                instance.phraseDao().insertAll(newPhrases)
+                            }
+                            dataVersionDataStore.setPhraseDataVersion(PHRASE_VERSION)
+                        }
                     }
                 }
             })
@@ -87,6 +125,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideLearnedKanaDao(db: ShioriDatabase): LearnedKanaDao = db.learnedKanaDao()
+
 }
 
 @Module

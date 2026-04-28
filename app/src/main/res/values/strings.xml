@@ -1,24 +1,36 @@
 <resources>
-    <string name="app_name">Shiori</string>
+    <string name="app_name">시오리</string>
 
     <!-- Home -->
-    <string name="home_greeting">안녕하세요 👋</string>
-    <string name="home_app_title">shiori</string>
-    <string name="home_subtitle">좋아하는 문장으로 배우는 일본어</string>
+    <string name="home_app_title">시오리</string>
+    <string name="home_subtitle">오늘도 한 문장씩 🦆</string>
     <string name="home_today_mission">오늘의 미션</string>
     <string name="home_mission_duration">5문제 · 약 2분</string>
+    <string name="home_weekly_streak">주간 학습 현황</string>
+    <string name="home_today_word">오늘의 단어</string>
+    <string name="home_today_phrase">오늘의 회화</string>
+    <string name="home_phrase_play_label">원어민 발음 듣기</string>
+    <string name="home_duck_streak">%d일째 연속 학습 중이에요!</string>
+    <string name="home_duck_cheer">오늘도 한 문장만 더 해봐요 🎉</string>
     <string name="mission_hiragana_quiz">히라가나 %s 퀴즈</string>
     <string name="mission_katakana_quiz">가타카나 %s 퀴즈</string>
     <string name="mission_word_review">단어 %d개 복습하기</string>
     <string name="mission_new_analysis">새 문장 분석해보기</string>
-    <string name="home_streak_label">연속 학습일</string>
-    <string name="home_bookmarks_section">내 책갈피</string>
-    <string name="home_bookmarks_empty">아직 저장한 문장이 없어요</string>
-    <string name="home_bookmarks_empty_subtitle">문장분석 탭에서 문장을 저장해보세요</string>
 
     <!-- Kana -->
-    <string name="kana_title">글자 학습</string>
+    <string name="kana_title">글자</string>
     <string name="kana_quiz_button">%s 퀴즈 시작 →</string>
+    <string name="kana_quiz_count_button">%d개 퀴즈 시작 →</string>
+    <string name="kana_all_duck_title">히라가나 · 가타카나 · 탁음</string>
+    <string name="kana_all_duck_desc">전체 %d개 글자 중 랜덤으로 출제해요</string>
+    <string name="kana_all_badge_hira">히라가나 46</string>
+    <string name="kana_all_badge_kata">가타카나 46</string>
+    <string name="kana_all_badge_daku">탁음 25</string>
+    <string name="kana_all_count_label">문제 수 선택</string>
+    <string name="kana_all_count_divider">직접 입력</string>
+    <string name="kana_all_count_unit">문제</string>
+    <string name="kana_all_count_max">최대 %d개</string>
+    <string name="kana_all_start_btn">%d개 랜덤 퀴즈 시작 →</string>
 
     <!-- Quiz -->
     <string name="quiz_back">← 돌아가기</string>
@@ -43,14 +55,13 @@
     <string name="analysis_bookmark_action">단어 북마크</string>
 
     <!-- Sentence (bottom tab) -->
-    <string name="sentence_title">문장</string>
+    <string name="sentence_title">학습</string>
     <string name="sentence_conversation_coming_soon">준비 중이에요</string>
     <string name="sentence_conversation_subtitle">일상회화 학습이 곧 추가돼요</string>
 
     <!-- My (bottom tab) -->
     <string name="my_title">마이</string>
     <string name="my_section_bookmarks">내 단어장</string>
-    <string name="my_section_saved_words">저장된 단어</string>
     <string name="my_section_stats">학습통계</string>
     <string name="my_section_settings">설정</string>
     <string name="my_stats_kana">학습 글자</string>
@@ -60,6 +71,94 @@
     <string name="my_empty_words">저장된 단어가 없어요</string>
     <string name="my_empty_words_subtitle">문장분석에서 단어를 저장해보세요</string>
     <string name="my_settings_coming_soon">설정 기능이 곧 추가돼요</string>
+    <string name="my_section_personal">개인</string>
+    <string name="my_section_app_info">앱 정보</string>
+    <string name="my_bookmarks_count">북마크한 단어 %d개</string>
+    <string name="my_dark_mode">다크 모드</string>
+    <string name="my_dark_mode_sub">앱 설정 따름</string>
+    <string name="my_rate">앱 평가하기</string>
+    <string name="my_rate_sub">플레이스토어 리뷰</string>
+    <string name="my_version">버전 정보</string>
+    <string name="my_version_value">v 1.0.0</string>
+    <string name="my_version_badge">최신</string>
+    <string name="my_premium_label">premium</string>
+    <string name="my_premium_title">광고 없이 공부하기</string>
+    <string name="my_premium_sub">전면 광고 제거</string>
+    <string name="my_premium_price">₩ 3,900</string>
+    <string name="my_premium_modal_title">shiori 프리미엄</string>
+    <string name="my_premium_modal_sub">한 번만 구매하면 영구적으로 광고가 사라져요</string>
+    <string name="my_premium_feature_1">홈화면 배너 광고 제거</string>
+    <string name="my_premium_feature_2">퀴즈 완료 후 전면 광고 제거</string>
+    <string name="my_premium_feature_3">문장 분석 후 전면 광고 제거</string>
+    <string name="my_premium_buy">₩ 3,900 · 영구 구매</string>
+    <string name="my_premium_cancel">나중에</string>
+    <string name="my_premium_active">프리미엄 이용 중 ✓</string>
+    <string name="my_premium_restore">구매 복원</string>
+    <string name="my_restore_sub">기기 변경 시 사용</string>
+    <string name="my_restore_success">구매가 복원됐어요 ✓</string>
+    <string name="my_restore_failure">복원할 구매 내역이 없어요</string>
+    <string name="my_word_list_subtitle">북마크한 단어 %1$d개 · 오늘 복습 %2$d개</string>
+    <string name="my_next_card">다음</string>
+    <string name="my_back">‹</string>
+
+    <!-- Exit dialog -->
+    <string name="exit_dialog_message">앱을 종료할까요?</string>
+    <string name="exit_dialog_confirm">확인</string>
+    <string name="exit_dialog_cancel">취소</string>
+
+    <!-- Word tab (sentence > 단어 segment) -->
+    <string name="word_quiz_start">단어 퀴즈 시작 →</string>
+    <string name="word_search_hint">단어, 뜻, 발음으로 검색</string>
+    <string name="word_search_no_result">검색 결과가 없어요</string>
+    <string name="word_pos_all">전체</string>
+    <string name="word_sort_level">수준별</string>
+    <string name="word_sort_pos">품사별</string>
+    <string name="word_empty">단어가 없어요</string>
+    <string name="word_bookmark_desc">북마크</string>
+    <string name="word_completed_desc">학습 완료</string>
+    <string name="word_bookmark_save">단어장에 저장</string>
+    <string name="word_bookmarked">저장됨 ✓</string>
+    <string name="word_detail_close">닫기</string>
+    <string name="pos_noun">명사</string>
+    <string name="pos_verb">동사</string>
+    <string name="pos_i_adj">い형용사</string>
+    <string name="pos_na_adj">な형용사</string>
+    <string name="pos_adverb">부사</string>
+    <string name="pos_conjunction">접속사</string>
+    <string name="pos_particle">조사</string>
+    <string name="pos_other">기타</string>
+
+    <!-- Word Quiz -->
+    <string name="word_quiz_title">단어 퀴즈</string>
+    <string name="word_quiz_section_type">퀴즈 유형</string>
+    <string name="word_quiz_type_meaning_title">뜻 맞추기</string>
+    <string name="word_quiz_type_meaning_sub">일본어 보고\n한국어 뜻 선택</string>
+    <string name="word_quiz_type_jp_title">일본어 맞추기</string>
+    <string name="word_quiz_type_jp_sub">한국어 뜻 보고\n일본어 선택</string>
+    <string name="word_quiz_section_level">수준 선택</string>
+    <string name="word_quiz_level_all">전체</string>
+    <string name="word_quiz_section_count">문제 수</string>
+    <string name="word_quiz_count_divider">직접 입력</string>
+    <string name="word_quiz_count_max">최대 %d개</string>
+    <string name="word_quiz_start_n">%d개 퀴즈 시작</string>
+    <string name="word_quiz_correct_count">정답 %d개</string>
+    <string name="word_quiz_badge_meaning">뜻 맞추기</string>
+    <string name="word_quiz_badge_jp">일본어 맞추기</string>
+    <string name="word_quiz_feedback_correct">정답! 🎉</string>
+    <string name="word_quiz_feedback_wrong">오답 · 정답: %s</string>
+    <string name="word_quiz_result_score_total">/ %d 문제</string>
+    <string name="word_quiz_result_correct_label">정답</string>
+    <string name="word_quiz_result_wrong_label">오답</string>
+    <string name="word_quiz_result_rate_label">정답률</string>
+    <string name="word_quiz_result_wrong_list">틀린 단어</string>
+    <string name="word_quiz_result_perfect">훌륭해요!</string>
+    <string name="word_quiz_result_good">잘 하고 있어요!</string>
+    <string name="word_quiz_result_poor">조금 더 연습해봐요!</string>
+    <string name="word_quiz_retry">다시 풀기</string>
+    <string name="word_quiz_reset">다시 설정</string>
+    <string name="word_quiz_wrong_tag">오답</string>
+    <string name="word_quiz_prompt_meaning">뜻을 고르세요</string>
+    <string name="word_quiz_prompt_japanese">일본어를 고르세요</string>
 
     <!-- Vocab -->
     <string name="vocab_title">내 단어장</string>

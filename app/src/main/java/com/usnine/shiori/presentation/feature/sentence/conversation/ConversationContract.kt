@@ -5,6 +5,11 @@ import com.usnine.shiori.presentation.base.MviEffect
 import com.usnine.shiori.presentation.base.MviEvent
 import com.usnine.shiori.presentation.base.MviState
 
+enum class VoiceGender(val folderName: String) {
+    FEMALE("female"),
+    MALE("male"),
+}
+
 enum class ConversationFilter(val label: String, val category: PhraseCategory?) {
     ALL("전체",   null),
     GREETING("인사",    PhraseCategory.GREETING),
@@ -30,6 +35,7 @@ interface ConversationContract {
         val selectedFilter: ConversationFilter = ConversationFilter.ALL,
         val displayedPhrases: List<PhraseUi> = emptyList(),
         val playingId: Long? = null,
+        val voiceGender: VoiceGender = VoiceGender.FEMALE,
     ) : MviState
 
     sealed interface UiEvent : MviEvent {

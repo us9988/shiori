@@ -12,10 +12,10 @@ data class WordUi(
     val id: Long,
     val japanese: String,
     val reading: String,
+    val koreanReading: String,
     val meaning: String,
     val partOfSpeech: PartOfSpeech,
     val level: WordLevel,
-    val isCompleted: Boolean = false,
     val isBookmarked: Boolean = false,
 )
 
@@ -24,17 +24,23 @@ interface WordContract {
     data class UiState(
         val sortType: WordSortType = WordSortType.LEVEL,
         val selectedLevel: WordLevel = WordLevel.N5,
-        val selectedPos: PartOfSpeech = PartOfSpeech.NOUN,
+        val selectedPos: PartOfSpeech? = null,
         val words: List<WordUi> = emptyList(),
+        val detailWordId: Long? = null,
         val isLoading: Boolean = false,
+        val isSearchActive: Boolean = false,
+        val searchQuery: String = "",
     ) : MviState
 
     sealed interface UiEvent : MviEvent {
         data class SortTypeChanged(val sortType: WordSortType) : UiEvent
         data class LevelSelected(val level: WordLevel) : UiEvent
-        data class PosSelected(val pos: PartOfSpeech) : UiEvent
+        data class PosSelected(val pos: PartOfSpeech?) : UiEvent
+        data class WordTapped(val wordId: Long) : UiEvent
+        object DetailDismissed : UiEvent
         data class BookmarkToggled(val wordId: Long) : UiEvent
-        data class CompletedToggled(val wordId: Long) : UiEvent
+        data object SearchToggled : UiEvent
+        data class SearchQueryChanged(val query: String) : UiEvent
     }
 
     sealed interface UiEffect : MviEffect

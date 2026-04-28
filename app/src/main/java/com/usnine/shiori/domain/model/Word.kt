@@ -7,9 +7,9 @@ data class Word(
     val id: Long,
     val japanese: String,
     val reading: String,
+    val koreanReading: String,
     val meaning: String,
     val partOfSpeech: PartOfSpeech,
     val level: WordLevel,
-    val isCompleted: Boolean,
     val isBookmarked: Boolean,
 )

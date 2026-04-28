@@ -3,7 +3,6 @@ package com.usnine.shiori.domain.usecase
 import com.usnine.shiori.data.local.StreakDataStore
 import com.usnine.shiori.data.local.dao.LearnedKanaDao
 import com.usnine.shiori.data.local.dao.ReviewDao
-import com.usnine.shiori.data.local.dao.WordDao
 import com.usnine.shiori.domain.model.StudyStats
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -13,7 +12,6 @@ import javax.inject.Inject
 
 class GetStudyStatsUseCase @Inject constructor(
     private val learnedKanaDao: LearnedKanaDao,
-    private val wordDao: WordDao,
     private val reviewDao: ReviewDao,
     private val streakDataStore: StreakDataStore,
 ) {
@@ -25,13 +23,11 @@ class GetStudyStatsUseCase @Inject constructor(
 
         return combine(
             learnedKanaDao.getAll(),
-            wordDao.countCompleted(),
             reviewDao.countTodayReviews(startOfDay),
             streakDataStore.streakDays,
-        ) { learnedKana, completedWords, todayReviews, streakDays ->
+        ) { learnedKana, todayReviews, streakDays ->
             StudyStats(
                 totalBookmarks   = learnedKana.size,
-                completedWords   = completedWords,
                 todayReviewCount = todayReviews,
                 streakDays       = streakDays,
             )

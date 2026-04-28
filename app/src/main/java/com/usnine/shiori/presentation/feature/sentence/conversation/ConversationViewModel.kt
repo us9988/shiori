@@ -64,13 +64,16 @@ class ConversationViewModel @Inject constructor(
     }
 
     private fun onPlayTapped(phrase: PhraseUi) {
+        if (phrase.audioFileName.isBlank()) return
+
         if (state.value.playingId == phrase.id) {
             player.stop()
             setState { copy(playingId = null) }
             return
         }
 
-        val uri = android.net.Uri.parse("asset:///audio/${phrase.audioFileName}")
+        val gender = state.value.voiceGender.folderName
+        val uri = android.net.Uri.parse("asset:///audio/$gender/${phrase.audioFileName}")
         player.setMediaItem(MediaItem.fromUri(uri))
         player.prepare()
         player.play()

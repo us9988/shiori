@@ -28,7 +28,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.app.Activity
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.usnine.shiori.presentation.ad.AdMobEntryPoint
+import dagger.hilt.android.EntryPointAccessors
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -41,18 +46,26 @@ import com.usnine.shiori.presentation.feature.kana.KanaTab
 import com.usnine.shiori.presentation.feature.my.MyScreen
 import com.usnine.shiori.presentation.feature.quiz.QuizScreen
 import com.usnine.shiori.presentation.feature.sentence.SentenceScreen
+import com.usnine.shiori.presentation.feature.wordquiz.WordQuizFlow
 
 @Composable
-fun AppNavGraph() {
+fun AppNavGraph(isPremium: Boolean = false) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val context = LocalContext.current
+    val adMobManager = remember(context) {
+        EntryPointAccessors
+            .fromApplication(context.applicationContext, AdMobEntryPoint::class.java)
+            .adMobManager()
+    }
 
     Scaffold(
         bottomBar = {
             ShioriNavBar(
                 currentRoute = currentDestination?.route,
                 onItemClick  = { item ->
+                    (context as? Activity)?.let { adMobManager.incrementTabCount(it, isPremium) }
                     navController.navigate(item.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
@@ -69,23 +82,40 @@ fun AppNavGraph() {
             startDestination = BottomNavItem.Home.route,
             modifier         = Modifier.padding(innerPadding),
         ) {
-            composable(BottomNavItem.Home.route)     { HomeScreen() }
+            composable(BottomNavItem.Home.route) { HomeScreen() }
             composable(BottomNavItem.Kana.route)     {
-                KanaScreen(onNavigateToQuiz = { tab ->
-                    navController.navigate("quiz/${tab.name}")
+                KanaScreen(onNavigateToQuiz = { tab, selected ->
+                    val encoded = Uri.encode(selected.joinToString(","))
+                    navController.navigate("quiz/${tab.name}?selected=$encoded")
                 })
             }
-            composable(BottomNavItem.Sentence.route) { SentenceScreen() }
+            composable(BottomNavItem.Sentence.route) {
+                SentenceScreen(onNavigateToWordQuiz = { navController.navigate("word_quiz") })
+            }
+            composable("word_quiz") {
+                WordQuizFlow(
+                    isPremium      = isPremium,
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
             composable(BottomNavItem.My.route)       { MyScreen() }
             composable(
-                route     = "quiz/{tab}",
-                arguments = listOf(navArgument("tab") { type = NavType.StringType }),
+                route     = "quiz/{tab}?selected={selected}",
+                arguments = listOf(
+                    navArgument("tab")      { type = NavType.StringType },
+                    navArgument("selected") { type = NavType.StringType; defaultValue = "" },
+                ),
             ) { backStackEntry ->
-                val tabName = backStackEntry.arguments?.getString("tab") ?: KanaTab.HIRAGANA.name
-                val tab     = KanaTab.valueOf(tabName)
+                val tabName       = backStackEntry.arguments?.getString("tab") ?: KanaTab.HIRAGANA.name
+                val tab           = KanaTab.valueOf(tabName)
+                val selectedParam = backStackEntry.arguments?.getString("selected") ?: ""
+                val selectedKana  = if (selectedParam.isEmpty()) emptySet()
+                                    else selectedParam.split(",").toSet()
                 QuizScreen(
-                    tab             = tab,
-                    onNavigateBack  = { navController.popBackStack() },
+                    tab            = tab,
+                    selectedKana   = selectedKana,
+                    isPremium      = isPremium,
+                    onNavigateBack = { navController.popBackStack() },
                 )
             }
         }

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PhraseDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(phrases: List<PhraseEntity>)
 
     @Query("SELECT * FROM phrases ORDER BY category, id")
@@ -22,4 +22,7 @@ interface PhraseDao {
 
     @Query("SELECT * FROM phrases WHERE id = :id")
     suspend fun getById(id: Long): PhraseEntity?
+
+    @Query("SELECT COUNT(*) FROM phrases")
+    suspend fun getCount(): Int
 }

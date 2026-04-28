@@ -22,7 +22,7 @@ import com.usnine.shiori.data.local.entity.WordEntity
         PhraseEntity::class,
         LearnedKanaEntity::class,
     ],
-    version = 7,
+    version = 8,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

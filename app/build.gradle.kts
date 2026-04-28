@@ -1,9 +1,17 @@
+import java.util.Properties
+
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -20,6 +28,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["ADMOB_APP_ID"] = localProperties.getProperty("ADMOB_APP_ID") ?: ""
     }
 
     buildTypes {
@@ -37,6 +46,14 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    val claudeApiKey = project.findProperty("CLAUDE_API_KEY")?.toString() ?: ""
+    buildTypes.configureEach {
+        buildConfigField("String", "CLAUDE_API_KEY", "\"$claudeApiKey\"")
+        buildConfigField("String", "ADMOB_BANNER_ID", "\"${localProperties.getProperty("ADMOB_BANNER_ID") ?: ""}\"")
+        buildConfigField("String", "ADMOB_INTERSTITIAL_ID", "\"${localProperties.getProperty("ADMOB_INTERSTITIAL_ID") ?: ""}\"")
     }
 }
 
@@ -82,6 +99,20 @@ dependencies {
 
     // Media3 (ExoPlayer)
     implementation(libs.androidx.media3.exoplayer)
+
+    // AdMob
+    implementation(libs.play.services.ads)
+
+    // Billing
+    implementation(libs.billing.ktx)
+
+    // Splash Screen
+    implementation(libs.androidx.core.splashscreen)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.crashlytics.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

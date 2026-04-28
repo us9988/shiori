@@ -29,12 +29,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.usnine.shiori.R
-import com.usnine.shiori.presentation.feature.sentence.analysis.AnalysisScreen
 import com.usnine.shiori.presentation.feature.sentence.conversation.ConversationScreen
 import com.usnine.shiori.presentation.feature.sentence.word.WordScreen
 
 @Composable
-fun SentenceScreen(viewModel: SentenceViewModel = viewModel()) {
+fun SentenceScreen(
+    onNavigateToWordQuiz: () -> Unit = {},
+    viewModel: SentenceViewModel = viewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -43,9 +45,8 @@ fun SentenceScreen(viewModel: SentenceViewModel = viewModel()) {
             onTabClick  = { viewModel.onEvent(SentenceContract.UiEvent.TabChanged(it)) },
         )
         when (state.selectedTab) {
-            SentenceTab.WORD         -> WordScreen()
+            SentenceTab.WORD         -> WordScreen(onStartQuiz = onNavigateToWordQuiz)
             SentenceTab.CONVERSATION -> ConversationScreen()
-            SentenceTab.ANALYSIS     -> AnalysisScreen()
         }
     }
 }

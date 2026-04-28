@@ -11,7 +11,6 @@ data class WordEntity(
     val meaning: String,
     val partOfSpeech: PartOfSpeech,
     val level: WordLevel,
-    val sourceBookmarkId: Long? = null,
-    val isCompleted: Boolean = false,
     val isBookmarked: Boolean = false,
+    val koreanReading: String = "",
 )

@@ -3,10 +3,12 @@ package com.usnine.shiori.data.local
 import com.usnine.shiori.data.local.entity.PhraseCategory
 import com.usnine.shiori.data.local.entity.PhraseEntity
 
+const val PHRASE_VERSION = 1
+
 val allPhrases = listOf(
 
     // 인사 (20문장)
-    PhraseEntity(1, "おはようございます", "오하요우 고자이마스", "안녕하세요 (아침)", PhraseCategory.GREETING, "N5", ""),
+    PhraseEntity(1, "おはようございます", "오하요우 고자이마스", "안녕하세요 (아침)", PhraseCategory.GREETING, "N5", "greeting_001.m4a"),
     PhraseEntity(2, "こんにちは", "콘니치와", "안녕하세요 (낮)", PhraseCategory.GREETING, "N5", ""),
     PhraseEntity(3, "こんばんは", "콘방와", "안녕하세요 (저녁)", PhraseCategory.GREETING, "N5", ""),
     PhraseEntity(4, "はじめまして", "하지메마시테", "처음 뵙겠습니다", PhraseCategory.GREETING, "N5", ""),

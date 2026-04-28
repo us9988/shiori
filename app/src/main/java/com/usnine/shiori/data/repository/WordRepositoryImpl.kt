@@ -14,16 +14,14 @@ class WordRepositoryImpl @Inject constructor(
     private val wordDao: WordDao,
 ) : WordRepository {
 
+    override fun getAll(): Flow<List<Word>> =
+        wordDao.getAll().map { list -> list.map { it.toDomain() } }
+
     override fun getByLevel(level: WordLevel): Flow<List<Word>> =
         wordDao.getByLevel(level).map { list -> list.map { it.toDomain() } }
 
     override fun getByPartOfSpeech(pos: PartOfSpeech): Flow<List<Word>> =
         wordDao.getByPartOfSpeech(pos).map { list -> list.map { it.toDomain() } }
-
-    override suspend fun toggleCompleted(wordId: Long) {
-        val current = wordDao.getById(wordId) ?: return
-        wordDao.updateCompleted(wordId, !current.isCompleted)
-    }
 
     override suspend fun toggleBookmark(wordId: Long) {
         val current = wordDao.getById(wordId) ?: return
@@ -32,12 +30,12 @@ class WordRepositoryImpl @Inject constructor(
 }
 
 private fun WordEntity.toDomain() = Word(
-    id           = id,
-    japanese     = japanese,
-    reading      = reading,
-    meaning      = meaning,
-    partOfSpeech = partOfSpeech,
-    level        = level,
-    isCompleted  = isCompleted,
-    isBookmarked = isBookmarked,
+    id            = id,
+    japanese      = japanese,
+    reading       = reading,
+    koreanReading = koreanReading,
+    meaning       = meaning,
+    partOfSpeech  = partOfSpeech,
+    level         = level,
+    isBookmarked  = isBookmarked,
 )

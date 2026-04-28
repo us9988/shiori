@@ -20,13 +20,15 @@ interface QuizContract {
     ) : MviState
 
     sealed interface UiEvent : MviEvent {
-        data class LoadQuiz(val tab: KanaTab) : UiEvent
+        data class LoadQuiz(val tab: KanaTab, val selectedKana: Set<String> = emptySet()) : UiEvent
         data class AnswerSelected(val answer: String) : UiEvent
         data object NextQuestion : UiEvent
+        data object AdDismissed : UiEvent
     }
 
     sealed interface UiEffect : MviEffect {
         data object NavigateBack : UiEffect
         data object ShowResult : UiEffect
+        data object ShowInterstitialAd : UiEffect
     }
 }

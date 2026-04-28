@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -22,9 +23,19 @@ class StreakDataStore @Inject constructor(
 ) {
     private val KEY_LAST_DATE  = stringPreferencesKey("last_study_date")
     private val KEY_STREAK     = intPreferencesKey("streak_days")
+    private val KEY_IS_PREMIUM = booleanPreferencesKey("is_premium")
 
     val streakDays: Flow<Int> = context.streakDataStore.data
         .map { prefs -> prefs[KEY_STREAK] ?: 0 }
+
+    val isPremium: Flow<Boolean> = context.streakDataStore.data
+        .map { prefs -> prefs[KEY_IS_PREMIUM] ?: false }
+
+    suspend fun setPremium(value: Boolean) {
+        context.streakDataStore.edit { prefs ->
+            prefs[KEY_IS_PREMIUM] = value
+        }
+    }
 
     suspend fun recordStudyToday() {
         val today     = LocalDate.now().toString()           // yyyy-MM-dd

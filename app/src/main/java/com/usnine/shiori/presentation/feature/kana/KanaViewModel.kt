@@ -25,8 +25,9 @@ class KanaViewModel @Inject constructor(
 
     override fun handleEvent(event: KanaContract.UiEvent) {
         when (event) {
-            is KanaContract.UiEvent.TabChanged -> onTabChanged(event.tab)
-            is KanaContract.UiEvent.KanaTapped -> onKanaTapped(event.kana)
+            is KanaContract.UiEvent.TabChanged        -> onTabChanged(event.tab)
+            is KanaContract.UiEvent.KanaTapped        -> onKanaTapped(event.kana)
+            is KanaContract.UiEvent.AllQuizCountChanged -> setState { copy(allQuizCount = event.count) }
         }
     }
 
@@ -59,6 +60,7 @@ class KanaViewModel @Inject constructor(
             KanaTab.HIRAGANA -> KanaData.hiraganaRows
             KanaTab.KATAKANA -> KanaData.katakanaRows
             KanaTab.DAKUTEN  -> KanaData.dakutenRows
+            KanaTab.ALL      -> emptyList()
         }
         setState { copy(rows = rows) }
     }
