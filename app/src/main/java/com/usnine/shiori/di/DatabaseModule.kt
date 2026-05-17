@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.usnine.shiori.data.local.MIGRATION_8_9
+import com.usnine.shiori.data.local.MIGRATION_9_10
 import com.usnine.shiori.data.local.ShioriDatabase
 import com.usnine.shiori.data.local.DataVersionDataStore
 import com.usnine.shiori.data.local.PHRASE_VERSION
@@ -17,10 +19,14 @@ import com.usnine.shiori.data.local.dao.LearnedKanaDao
 import com.usnine.shiori.data.local.dao.PhraseDao
 import com.usnine.shiori.data.local.dao.ReviewDao
 import com.usnine.shiori.data.local.dao.WordDao
+import com.usnine.shiori.data.local.dao.WordProgressDao
 import com.usnine.shiori.data.repository.BookmarkRepositoryImpl
 import com.usnine.shiori.data.repository.WordRepositoryImpl
+import com.usnine.shiori.data.repository.WordStudyRepositoryImpl
 import com.usnine.shiori.domain.repository.BookmarkRepository
 import com.usnine.shiori.domain.repository.WordRepository
+import com.usnine.shiori.domain.repository.WordStudyRepository
+import com.usnine.shiori.presentation.billing.BillingManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -29,8 +35,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class IsPremiumFlow
 
 // level 컬럼은 "N5" 등 이미 enum name과 동일하지만, partOfSpeech는 한글 값이라
 // 기존 words 행을 모두 삭제하고 enum 기반 저장으로 전환한다.
@@ -68,7 +80,7 @@ object DatabaseModule {
             ShioriDatabase::class.java,
             "shiori.db",
         )
-            .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+            .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
             .fallbackToDestructiveMigration()
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
@@ -126,6 +138,15 @@ object DatabaseModule {
     @Singleton
     fun provideLearnedKanaDao(db: ShioriDatabase): LearnedKanaDao = db.learnedKanaDao()
 
+    @Provides
+    @Singleton
+    fun provideWordProgressDao(db: ShioriDatabase): WordProgressDao = db.wordProgressDao()
+
+    @Provides
+    @Singleton
+    @IsPremiumFlow
+    fun provideIsPremiumFlow(billingManager: BillingManager): StateFlow<Boolean> = billingManager.isPremium
+
 }
 
 @Module
@@ -139,4 +160,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindWordRepository(impl: WordRepositoryImpl): WordRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindWordStudyRepository(impl: WordStudyRepositoryImpl): WordStudyRepository
 }

@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.usnine.shiori.data.local.StreakDataStore
 import com.usnine.shiori.presentation.ad.AdMobManager
 import com.usnine.shiori.presentation.analytics.AnalyticsManager
 import com.usnine.shiori.presentation.ad.ExitDialog
@@ -26,7 +25,6 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     @Inject lateinit var adMobManager: AdMobManager
-    @Inject lateinit var streakDataStore: StreakDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -37,13 +35,12 @@ class MainActivity : ComponentActivity() {
         adMobManager.loadInterstitialAd()
         setContent {
             val isDarkMode by mainViewModel.isDarkMode.collectAsStateWithLifecycle()
-            val isPremium  by streakDataStore.isPremium.collectAsStateWithLifecycle(initialValue = false)
             var showExitDialog by remember { mutableStateOf(false) }
 
             BackHandler { showExitDialog = true }
 
             ShioriTheme(darkTheme = isDarkMode) {
-                AppNavGraph(isPremium = isPremium)
+                AppNavGraph()
                 if (showExitDialog) {
                     ExitDialog(
                         adMobManager = adMobManager,

@@ -44,6 +44,7 @@ class HomeViewModel @Inject constructor(
             HomeContract.UiEvent.WordOfDayBookmarkToggled -> toggleWodBookmark()
             HomeContract.UiEvent.NextWordOfDay            -> nextWord()
             HomeContract.UiEvent.NextPhraseOfDay          -> nextPhrase()
+            HomeContract.UiEvent.MissionTapped            -> onMissionTapped()
         }
     }
 
@@ -59,6 +60,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val mission = getTodayMissionUseCase()
             setState { copy(todayMission = mission) }
+        }
+    }
+
+    private fun onMissionTapped() {
+        val mission = state.value.todayMission ?: return
+        when (mission.destination) {
+            MissionDestination.WORD_STUDY_SCREEN -> sendEffect(HomeContract.UiEffect.NavigateToWordStudy)
         }
     }
 

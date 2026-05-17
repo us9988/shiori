@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
+app/src/main/java/com/us9988/mvi/data/local/word/

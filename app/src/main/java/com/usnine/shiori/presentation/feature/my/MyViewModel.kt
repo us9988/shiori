@@ -1,7 +1,6 @@
 package com.usnine.shiori.presentation.feature.my
 
 import androidx.lifecycle.viewModelScope
-import com.usnine.shiori.data.local.StreakDataStore
 import com.usnine.shiori.data.local.ThemePreferenceStore
 import com.usnine.shiori.data.local.dao.WordDao
 import com.usnine.shiori.data.local.entity.WordEntity
@@ -19,7 +18,6 @@ class MyViewModel @Inject constructor(
     private val wordDao: WordDao,
     private val getStudyStatsUseCase: GetStudyStatsUseCase,
     private val themePreferenceStore: ThemePreferenceStore,
-    private val streakDataStore: StreakDataStore,
     private val billingManager: BillingManager,
 ) : MviViewModel<MyContract.UiEvent, MyContract.UiState, MyContract.UiEffect>(
     initialState = MyContract.UiState()
@@ -59,16 +57,13 @@ class MyViewModel @Inject constructor(
     }
 
     private fun observePremium() {
-        streakDataStore.isPremium
+        billingManager.isPremium
             .onEach { premium -> setState { copy(isPremium = premium) } }
             .launchIn(viewModelScope)
     }
 
     private fun onPurchaseCompleted() {
-        viewModelScope.launch {
-            streakDataStore.setPremium(true)
-            setState { copy(isPremium = true, showPremiumModal = false) }
-        }
+        setState { copy(showPremiumModal = false) }
     }
 
     private fun observeDarkMode() {

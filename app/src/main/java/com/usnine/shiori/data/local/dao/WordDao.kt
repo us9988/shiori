@@ -71,6 +71,12 @@ interface WordDao {
     @Query("SELECT COUNT(*) FROM words WHERE level = :level")
     suspend fun countByLevel(level: WordLevel): Int
 
+    @Query("SELECT * FROM words WHERE isBookmarked = 1")
+    suspend fun getBookmarkedList(): List<WordEntity>
+
+    @Query("SELECT COUNT(*) FROM words WHERE isBookmarked = 1")
+    suspend fun countBookmarked(): Int
+
     @Query("UPDATE words SET isBookmarked = :bookmarked WHERE id = :id")
     suspend fun updateBookmark(id: Long, bookmarked: Boolean)
 

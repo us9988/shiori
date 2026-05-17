@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,6 +32,8 @@ import androidx.compose.ui.unit.sp
 import android.app.Activity
 import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.usnine.shiori.presentation.ad.AdMobEntryPoint
 import dagger.hilt.android.EntryPointAccessors
@@ -38,8 +41,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.usnine.shiori.data.local.entity.WordLevel
 import com.usnine.shiori.presentation.feature.home.HomeScreen
 import com.usnine.shiori.presentation.feature.kana.KanaScreen
 import com.usnine.shiori.presentation.feature.kana.KanaTab
@@ -47,9 +52,14 @@ import com.usnine.shiori.presentation.feature.my.MyScreen
 import com.usnine.shiori.presentation.feature.quiz.QuizScreen
 import com.usnine.shiori.presentation.feature.sentence.SentenceScreen
 import com.usnine.shiori.presentation.feature.wordquiz.WordQuizFlow
+import com.usnine.shiori.presentation.feature.wordstudy.WordStudyCardScreen
+import com.usnine.shiori.presentation.feature.wordstudy.WordStudyContract
+import com.usnine.shiori.presentation.feature.wordstudy.WordStudyListScreen
+import com.usnine.shiori.presentation.feature.wordstudy.WordStudyResultScreen
+import com.usnine.shiori.presentation.feature.wordstudy.WordStudyViewModel
 
 @Composable
-fun AppNavGraph(isPremium: Boolean = false) {
+fun AppNavGraph() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -65,7 +75,7 @@ fun AppNavGraph(isPremium: Boolean = false) {
             ShioriNavBar(
                 currentRoute = currentDestination?.route,
                 onItemClick  = { item ->
-                    (context as? Activity)?.let { adMobManager.incrementTabCount(it, isPremium) }
+                    (context as? Activity)?.let { adMobManager.incrementTabCount(it) }
                     navController.navigate(item.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
@@ -82,7 +92,11 @@ fun AppNavGraph(isPremium: Boolean = false) {
             startDestination = BottomNavItem.Home.route,
             modifier         = Modifier.padding(innerPadding),
         ) {
-            composable(BottomNavItem.Home.route) { HomeScreen() }
+            composable(BottomNavItem.Home.route) {
+                HomeScreen(
+                    onNavigateToWordStudy = { navController.navigate("word_study") },
+                )
+            }
             composable(BottomNavItem.Kana.route)     {
                 KanaScreen(onNavigateToQuiz = { tab, selected ->
                     val encoded = Uri.encode(selected.joinToString(","))
@@ -90,14 +104,170 @@ fun AppNavGraph(isPremium: Boolean = false) {
                 })
             }
             composable(BottomNavItem.Sentence.route) {
-                SentenceScreen(onNavigateToWordQuiz = { navController.navigate("word_quiz") })
+                SentenceScreen(
+                    onNavigateToWordQuiz      = { navController.navigate("word_quiz") },
+                    onNavigateToWordStudyStep = { level, step, isReview ->
+                        navController.navigate("word_study/card/${level.name}/$step?isReview=$isReview")
+                    },
+                )
             }
             composable("word_quiz") {
                 WordQuizFlow(
-                    isPremium      = isPremium,
                     onNavigateBack = { navController.popBackStack() },
                 )
             }
+
+            // ── Word Study ──────────────────────────────────────────────────
+            navigation(
+                startDestination = "word_study/list",
+                route            = "word_study",
+            ) {
+                // 1. 단계 목록
+                composable("word_study/list") { entry ->
+                    val parentEntry = remember(entry) {
+                        navController.getBackStackEntry("word_study")
+                    }
+                    val viewModel: WordStudyViewModel = hiltViewModel(parentEntry)
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    WordStudyListScreen(
+                        state   = state,
+                        onEvent = { event ->
+                            if (event is WordStudyContract.UiEvent.StepTapped) {
+                                viewModel.onEvent(event)
+                                navController.navigate(
+                                    "word_study/card/${state.selectedLevel.name}/${event.step}?isReview=${event.isReview}"
+                                )
+                            } else {
+                                viewModel.onEvent(event)
+                            }
+                        },
+                    )
+                }
+
+                // 2. 플래시카드 세션
+                composable(
+                    route     = "word_study/card/{level}/{step}?isReview={isReview}",
+                    arguments = listOf(
+                        navArgument("level")    { type = NavType.StringType },
+                        navArgument("step")     { type = NavType.IntType },
+                        navArgument("isReview") { type = NavType.StringType; defaultValue = "false" },
+                    ),
+                ) { entry ->
+                    val parentEntry = remember(entry) {
+                        navController.getBackStackEntry("word_study")
+                    }
+                    val viewModel: WordStudyViewModel = hiltViewModel(parentEntry)
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    val levelName = entry.arguments?.getString("level") ?: return@composable
+                    val step      = entry.arguments?.getInt("step")     ?: return@composable
+                    val isReview  = entry.arguments?.getString("isReview") == "true"
+                    val level     = runCatching { WordLevel.valueOf(levelName) }
+                                        .getOrElse { return@composable }
+
+                    // 세션이 없으면 nav arg로 직접 로드 (딥링크·복원·WordScreen 진입 대응)
+                    // isLoading 체크 제거: init의 loadLevelInfoList()와 경쟁 시 LaunchedEffect가
+                    // isLoading=true를 보고 StepTapped를 건너뛰어 영구 빈화면이 되는 버그 방지
+                    LaunchedEffect(level, step, isReview) {
+                        if (state.currentSession.isEmpty()) {
+                            viewModel.onEvent(WordStudyContract.UiEvent.LevelSelected(level))
+                            viewModel.onEvent(WordStudyContract.UiEvent.StepTapped(step, isReview))
+                        }
+                    }
+
+                    // Effect 수집 → 결과 화면 이동
+                    val cardDestId = entry.destination.id
+                    LaunchedEffect(viewModel) {
+                        viewModel.effect.collect { effect ->
+                            when (effect) {
+                                WordStudyContract.UiEffect.ShowInterstitialAd -> {
+                                    // 결과 화면으로 먼저 이동 후 광고 표시
+                                    viewModel.onEvent(WordStudyContract.UiEvent.SessionFinishConfirmed)
+                                }
+                                is WordStudyContract.UiEffect.NavigateToResult -> {
+                                    val nextStr = effect.nextStep?.toString() ?: ""
+                                    navController.navigate(
+                                        "word_study/result/${effect.completedCount}?nextStep=$nextStr"
+                                    ) {
+                                        // 카드 화면을 백스택에서 제거해 결과→뒤로 시 목록으로 이동
+                                        popUpTo(cardDestId) { inclusive = true }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    WordStudyCardScreen(
+                        state   = state,
+                        onEvent = viewModel::onEvent,
+                        onBack  = { navController.popBackStack() },
+                    )
+                }
+
+                // 3. 결과 화면
+                composable(
+                    route     = "word_study/result/{completedCount}?nextStep={nextStep}",
+                    arguments = listOf(
+                        navArgument("completedCount") { type = NavType.IntType },
+                        navArgument("nextStep") {
+                            type         = NavType.StringType
+                            defaultValue = ""
+                        },
+                    ),
+                ) { entry ->
+                    val parentEntry = remember(entry) {
+                        navController.getBackStackEntry("word_study")
+                    }
+                    val viewModel: WordStudyViewModel = hiltViewModel(parentEntry)
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    val completedCount = entry.arguments?.getInt("completedCount") ?: 0
+                    val nextStep       = entry.arguments?.getString("nextStep")
+                                            ?.toIntOrNull()
+                    val info = state.levelInfoList.find { it.level == state.selectedLevel }
+
+                    LaunchedEffect(Unit) {
+                        adMobManager.showInterstitialAd(context as Activity) {}
+                    }
+
+                    WordStudyResultScreen(
+                        completedCount      = completedCount,
+                        nextStep            = nextStep,
+                        level               = state.selectedLevel,
+                        currentStep         = state.currentStep,
+                        totalCount          = info?.totalCount ?: 0,
+                        levelCompletedCount = info?.completedCount ?: 0,
+                        onHome = {
+                            navController.navigate(BottomNavItem.Home.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState    = true
+                            }
+                        },
+                        onNextStep = { step ->
+                            viewModel.onEvent(WordStudyContract.UiEvent.StepTapped(step))
+                            navController.navigate(
+                                "word_study/card/${state.selectedLevel.name}/$step?isReview=false"
+                            ) {
+                                popUpTo("word_study/list") { inclusive = false }
+                            }
+                        },
+                        onRetry = {
+                            val step = state.currentStep
+                            viewModel.onEvent(WordStudyContract.UiEvent.StepTapped(step, isReview = true))
+                            navController.navigate(
+                                "word_study/card/${state.selectedLevel.name}/$step?isReview=true"
+                            ) {
+                                popUpTo("word_study/list") { inclusive = false }
+                            }
+                        },
+                    )
+                }
+            }
+
             composable(BottomNavItem.My.route)       { MyScreen() }
             composable(
                 route     = "quiz/{tab}?selected={selected}",
@@ -114,7 +284,6 @@ fun AppNavGraph(isPremium: Boolean = false) {
                 QuizScreen(
                     tab            = tab,
                     selectedKana   = selectedKana,
-                    isPremium      = isPremium,
                     onNavigateBack = { navController.popBackStack() },
                 )
             }

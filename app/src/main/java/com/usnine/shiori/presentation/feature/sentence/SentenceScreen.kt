@@ -29,12 +29,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.usnine.shiori.R
+import com.usnine.shiori.data.local.entity.WordLevel
 import com.usnine.shiori.presentation.feature.sentence.conversation.ConversationScreen
 import com.usnine.shiori.presentation.feature.sentence.word.WordScreen
 
 @Composable
 fun SentenceScreen(
     onNavigateToWordQuiz: () -> Unit = {},
+    onNavigateToWordStudyStep: (WordLevel, Int, Boolean) -> Unit = { _, _, _ -> },
     viewModel: SentenceViewModel = viewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -44,8 +46,12 @@ fun SentenceScreen(
             selectedTab = state.selectedTab,
             onTabClick  = { viewModel.onEvent(SentenceContract.UiEvent.TabChanged(it)) },
         )
+        HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outline)
         when (state.selectedTab) {
-            SentenceTab.WORD         -> WordScreen(onStartQuiz = onNavigateToWordQuiz)
+            SentenceTab.WORD -> WordScreen(
+                onStartQuiz  = onNavigateToWordQuiz,
+                onStepTapped = onNavigateToWordStudyStep,
+            )
             SentenceTab.CONVERSATION -> ConversationScreen()
         }
     }
@@ -63,15 +69,14 @@ private fun SentenceHeader(
             .padding(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 14.dp),
     ) {
         Text(
-            text  = stringResource(R.string.sentence_title),
-            style = MaterialTheme.typography.titleMedium,
+            text     = stringResource(R.string.sentence_title),
+            style    = MaterialTheme.typography.titleMedium,
             fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.primary,
+            color    = MaterialTheme.colorScheme.primary,
         )
         Spacer(modifier = Modifier.height(12.dp))
         SentenceTabSelector(selectedTab = selectedTab, onTabClick = onTabClick)
     }
-    HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outline)
 }
 
 @Composable

@@ -4,9 +4,10 @@
     <!-- Home -->
     <string name="home_app_title">시오리</string>
     <string name="home_subtitle">오늘도 한 문장씩 🦆</string>
-    <string name="home_today_mission">오늘의 미션</string>
+    <string name="home_today_mission">오늘의 학습</string>
     <string name="home_mission_duration">5문제 · 약 2분</string>
     <string name="home_weekly_streak">주간 학습 현황</string>
+    <string name="home_today_study">오늘의 학습</string>
     <string name="home_today_word">오늘의 단어</string>
     <string name="home_today_phrase">오늘의 회화</string>
     <string name="home_phrase_play_label">원어민 발음 듣기</string>
@@ -16,6 +17,8 @@
     <string name="mission_katakana_quiz">가타카나 %s 퀴즈</string>
     <string name="mission_word_review">단어 %d개 복습하기</string>
     <string name="mission_new_analysis">새 문장 분석해보기</string>
+    <string name="mission_word_study_start">N5 단어 학습 시작</string>
+    <string name="mission_word_study_resume">N5 단어 학습 이어하기</string>
 
     <!-- Kana -->
     <string name="kana_title">글자</string>
@@ -107,6 +110,7 @@
     <string name="exit_dialog_cancel">취소</string>
 
     <!-- Word tab (sentence > 단어 segment) -->
+    <string name="word_mode_tooltip">탭해서 단어 목록 보기</string>
     <string name="word_quiz_start">단어 퀴즈 시작 →</string>
     <string name="word_search_hint">단어, 뜻, 발음으로 검색</string>
     <string name="word_search_no_result">검색 결과가 없어요</string>
@@ -128,6 +132,20 @@
     <string name="pos_particle">조사</string>
     <string name="pos_other">기타</string>
 
+    <!-- Word Study Guide -->
+    <string name="word_guide_title">시오리 단어 학습법</string>
+    <string name="word_guide_close">닫기</string>
+    <string name="word_guide_1_title">카드를 탭해서 뜻을 확인하세요</string>
+    <string name="word_guide_1_desc">먼저 스스로 생각해보고 탭하는 게 더 효과적이에요</string>
+    <string name="word_guide_2_title">알아요 / 다시볼게요로 나눠요</string>
+    <string name="word_guide_2_desc">확실히 아는 단어만 알아요를 눌러요\n애매하면 다시볼게요!</string>
+    <string name="word_guide_3_title">다시볼게요 단어는 계속 나와요</string>
+    <string name="word_guide_3_desc">모든 단어를 알아요 할 때까지\n반복해서 출제돼요</string>
+    <string name="word_guide_4_title">단계가 쌓일수록 복습이 돼요</string>
+    <string name="word_guide_4_desc">1-100은 1-50 단어도 포함해서\n자연스럽게 이전 단어를 복습해요</string>
+    <string name="word_guide_5_title">회독을 늘려보세요</string>
+    <string name="word_guide_5_desc">완료한 단계를 다시 학습하면\n회독 수가 올라가요</string>
+
     <!-- Word Quiz -->
     <string name="word_quiz_title">단어 퀴즈</string>
     <string name="word_quiz_section_type">퀴즈 유형</string>
@@ -135,6 +153,9 @@
     <string name="word_quiz_type_meaning_sub">일본어 보고\n한국어 뜻 선택</string>
     <string name="word_quiz_type_jp_title">일본어 맞추기</string>
     <string name="word_quiz_type_jp_sub">한국어 뜻 보고\n일본어 선택</string>
+    <string name="word_quiz_section_range">범위</string>
+    <string name="word_quiz_range_all">전체 단어</string>
+    <string name="word_quiz_range_bookmarked">북마크만</string>
     <string name="word_quiz_section_level">수준 선택</string>
     <string name="word_quiz_level_all">전체</string>
     <string name="word_quiz_section_count">문제 수</string>
@@ -159,6 +180,44 @@
     <string name="word_quiz_wrong_tag">오답</string>
     <string name="word_quiz_prompt_meaning">뜻을 고르세요</string>
     <string name="word_quiz_prompt_japanese">일본어를 고르세요</string>
+
+    <!-- Word Study -->
+    <string name="study_step_range">1 - %d</string>
+    <string name="study_step_completed_count">%1$d / %2$d개 완료</string>
+    <string name="study_step_new_count">0 / %d개</string>
+    <string name="study_step_locked_hint">이전 단계 완료 후 잠금 해제</string>
+    <string name="study_badge_completed">완료 ✅</string>
+    <string name="study_badge_in_progress">진행 중</string>
+    <string name="study_badge_new">시작 전</string>
+    <string name="study_badge_locked">🔒 잠김</string>
+    <string name="study_btn_review">다시 학습</string>
+    <string name="study_btn_resume">이어 학습</string>
+    <string name="study_btn_start">시작하기</string>
+    <string name="study_card_label_front">뜻을 알고 있나요?</string>
+    <string name="study_card_hint">탭해서 뜻 확인 👆</string>
+    <string name="study_card_label_back">정답</string>
+    <string name="study_card_know_prompt">알고 있었나요?</string>
+    <string name="study_btn_again">❌ 다시 볼게요</string>
+    <string name="study_btn_know">✅ 알아요</string>
+    <string name="study_progress_completed">%1$d / %2$d</string>
+    <string name="study_progress_remaining">%d개 남음</string>
+    <string name="study_remain_badge">%d개</string>
+    <string name="study_card_title">%1$s · 1-%2$d</string>
+    <string name="study_exit_msg">지금까지 학습한 단어는 저장돼요</string>
+    <string name="study_exit_confirm">나가기</string>
+    <string name="study_exit_cancel">계속 학습</string>
+    <string name="study_result_title">1-%d 완료!</string>
+    <string name="study_result_sub">%1$s 단어 %2$d개를\n모두 학습했어요</string>
+    <string name="study_result_stat_learned">학습한 단어</string>
+    <string name="study_result_stat_know">알아요 완료</string>
+    <string name="study_result_unlock_title">🔓 1-%d 해금됐어요!</string>
+    <string name="study_result_unlock_sub">%s 다음 단계가 열렸어요</string>
+    <string name="study_result_progress_title">📊 %s 전체 진도</string>
+    <string name="study_result_progress_text">%1$d개 중 %2$d개 완료 · %3$d%%</string>
+    <string name="study_result_btn_home">홈으로</string>
+    <string name="study_result_btn_next">1-%d 시작</string>
+    <string name="study_result_btn_again">다시 학습</string>
+    <string name="study_review_count">%d회독째 진행중</string>
 
     <!-- Vocab -->
     <string name="vocab_title">내 단어장</string>

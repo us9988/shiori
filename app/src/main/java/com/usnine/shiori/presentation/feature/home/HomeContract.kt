@@ -33,11 +33,18 @@ data class PhraseOfDayUi(
     val category: PhraseCategory,
 )
 
+enum class MissionDestination { WORD_STUDY_SCREEN }
+
+data class TodayMission(
+    val label: String,
+    val destination: MissionDestination,
+)
+
 interface HomeContract {
 
     data class UiState(
         val streak: Int = 0,
-        val todayMission: String = "",
+        val todayMission: TodayMission? = null,
         val wordOfDay: WordOfDayUi? = null,
         val phraseOfDay: PhraseOfDayUi? = null,
     ) : MviState
@@ -47,7 +54,10 @@ interface HomeContract {
         data object WordOfDayBookmarkToggled : UiEvent
         data object NextWordOfDay : UiEvent
         data object NextPhraseOfDay : UiEvent
+        data object MissionTapped : UiEvent
     }
 
-    sealed interface UiEffect : MviEffect
+    sealed interface UiEffect : MviEffect {
+        data object NavigateToWordStudy : UiEffect
+    }
 }

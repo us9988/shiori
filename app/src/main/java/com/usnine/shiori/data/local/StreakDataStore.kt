@@ -8,8 +8,10 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.usnine.shiori.data.local.entity.WordLevel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
@@ -25,6 +27,9 @@ class StreakDataStore @Inject constructor(
     private val KEY_STREAK     = intPreferencesKey("streak_days")
     private val KEY_IS_PREMIUM = booleanPreferencesKey("is_premium")
 
+    private fun unlockedStepKey(level: WordLevel) =
+        intPreferencesKey("unlocked_step_${level.name}")
+
     val streakDays: Flow<Int> = context.streakDataStore.data
         .map { prefs -> prefs[KEY_STREAK] ?: 0 }
 
@@ -34,6 +39,15 @@ class StreakDataStore @Inject constructor(
     suspend fun setPremium(value: Boolean) {
         context.streakDataStore.edit { prefs ->
             prefs[KEY_IS_PREMIUM] = value
+        }
+    }
+
+    suspend fun getUnlockedStep(level: WordLevel): Int =
+        context.streakDataStore.data.first()[unlockedStepKey(level)] ?: 50
+
+    suspend fun setUnlockedStep(level: WordLevel, step: Int) {
+        context.streakDataStore.edit { prefs ->
+            prefs[unlockedStepKey(level)] = step
         }
     }
 

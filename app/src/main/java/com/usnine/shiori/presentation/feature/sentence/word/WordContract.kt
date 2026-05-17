@@ -23,24 +23,31 @@ interface WordContract {
 
     data class UiState(
         val sortType: WordSortType = WordSortType.LEVEL,
-        val selectedLevel: WordLevel = WordLevel.N5,
+        val selectedLevel: WordLevel? = null,
         val selectedPos: PartOfSpeech? = null,
         val words: List<WordUi> = emptyList(),
         val detailWordId: Long? = null,
         val isLoading: Boolean = false,
         val isSearchActive: Boolean = false,
         val searchQuery: String = "",
+        val isListMode: Boolean = false,
+        val isTooltipVisible: Boolean = false,
+        val isGuideVisible: Boolean = false,
     ) : MviState
 
     sealed interface UiEvent : MviEvent {
         data class SortTypeChanged(val sortType: WordSortType) : UiEvent
-        data class LevelSelected(val level: WordLevel) : UiEvent
+        data class LevelSelected(val level: WordLevel?) : UiEvent
         data class PosSelected(val pos: PartOfSpeech?) : UiEvent
         data class WordTapped(val wordId: Long) : UiEvent
         object DetailDismissed : UiEvent
         data class BookmarkToggled(val wordId: Long) : UiEvent
         data object SearchToggled : UiEvent
         data class SearchQueryChanged(val query: String) : UiEvent
+        data object ModeToggled : UiEvent
+        data object TooltipDismissed : UiEvent
+        data object GuideTapped : UiEvent
+        data object GuideDismissed : UiEvent
     }
 
     sealed interface UiEffect : MviEffect

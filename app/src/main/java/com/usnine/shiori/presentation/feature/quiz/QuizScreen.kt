@@ -54,7 +54,6 @@ import com.usnine.shiori.ui.theme.NotoSerifJpFamily
 fun QuizScreen(
     tab: KanaTab,
     selectedKana: Set<String> = emptySet(),
-    isPremium: Boolean = false,
     onNavigateBack: () -> Unit,
     viewModel: QuizViewModel = viewModel(),
 ) {
@@ -81,7 +80,7 @@ fun QuizScreen(
                         .adMobManager()
                     val activity = context as? Activity
                     if (activity != null) {
-                        adMobManager.showInterstitialAd(activity, isPremium) {
+                        adMobManager.showInterstitialAd(activity) {
                             viewModel.onEvent(QuizContract.UiEvent.AdDismissed)
                         }
                     } else {
