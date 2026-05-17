@@ -9,9 +9,9 @@
 
 ## Screenshots
 
-|                   Home                   | Kana | Word Study |                 WordList                 | Conversation |
-|:----------------------------------------:|:---:|:---:|:----------------------------------------:|:------------:|
-| ![Home](docs/images/screenshot_home.jpg) | ![Kana](docs/images/screenshot_kana.jpg) | ![Word](docs/images/screenshot_word.jpg) | ![List](docs/images/screenshot_list.jpg) | ![Conversation](docs/images/screenshot_conversation.jpg) |
+|                           Home                           | Kana | Word Study |                 WordList                 | Conversation |
+|:--------------------------------------------------------:|:---:|:---:|:---:|:---:|
+| <img src="docs/images/screenshot_home.jpg" width="200"/> | ![Kana](docs/images/screenshot_kana.jpg) | ![Word](docs/images/screenshot_word.jpg) | ![List](docs/images/screenshot_list.jpg) | ![Conversation](docs/images/screenshot_conversation.jpg) |
  
 ---
 
